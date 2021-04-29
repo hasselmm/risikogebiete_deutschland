@@ -9,6 +9,9 @@ var scripts = document.getElementsByTagName('script');
 var path = scripts[scripts.length-1].src.split('?')[0];      // remove any ?query
 var mydir = path.split('/').slice(0, -1).join('/')+'/';  // remove last filename part of path
 
+let myparams = new URLSearchParams(document.location.search.substring(1));
+let mydate = myparams.get("date");
+var mydata = mydir + (mydate ? "../history/" + mydate + "/" : "../data/");
 
 function setup_amChartmap(){
 
@@ -88,7 +91,7 @@ function setup_highchartsmap(){
 
 	//DATA prep
 	var request = new XMLHttpRequest();
-	request.open("GET", mydir+"../data/data_latest.json", false);
+	request.open("GET", mydata + "data_latest.json", false);
 	request.send(null)
 	data_json = JSON.parse(request.responseText);
 
@@ -252,26 +255,20 @@ function setup_highchartsmap(){
       pointFormat: '{point.properties.GEN}: {point.properties.id}'
     },
 
-    colors:["#15b01a","#fac205","#f97c0e","#c50000","#8c53d1","#303030"],
+    colors:["#15b01a","#fac205","#f99f09","#f97c0e","#c50000","#b21b45","#9f378b","#8c53d1","#303030"],
     colorAxis: {
         dataClassColor: 'category',
-        dataClasses: [{
-            to: 25
-        }, {
-            from: 25,
-            to: 50
-        }, {
-            from: 50,
-            to: 100
-        }, {
-            from: 100,
-            to: 200
-        }, {
-            from: 200,
-            to: 500
-        }, {
-            from: 500,
-        }],
+        dataClasses: [
+		{ to: 25 },
+		{ from: 25, to: 50 },
+		{ from: 50, to: 75 },
+		{ from: 75, to: 100 },
+		{ from: 100, to: 125 },
+		{ from: 125, to: 150 },
+		{ from: 150, to: 200 },
+		{ from: 200, to: 500 },
+		{ from: 500, }
+	],
         events:{
         	legendItemClick: function(e){e.preventDefault();console.log(e)},
         }
@@ -381,5 +378,18 @@ const date = async () => {
   const lastcommit = await response2.json()
   const lastcommitdate = lastcommit.committer.date
   document.getElementById("lastcommitdate").innerHTML = lastcommitdate
+
+  function strDate(date) {
+    return date.toISOString().substr(0, 10);
+  }
+
+  let d = mydate ? new Date(mydate) : new Date();
+  document.getElementById("history_now").innerHTML = strDate(d);
+
+  d.setDate(d.getDate() - 1);
+  document.getElementById("history_back").href = "?date=" + strDate(d);
+
+  d.setDate(d.getDate() + 2);
+  document.getElementById("history_next").href = "?date=" + strDate(d);
 }
 
