@@ -1,12 +1,13 @@
 #!/bin/bash
 
 rm -fr /tmp/covidkids
+mkdir /tmp/covidkids
 
-git log  --pretty=%H\ %ai\ %an data/  | grep UpdateBot |\
+git log  --pretty=%H\ %ai\ %an origin/master -- assets/data/  | grep UpdateBot |\
 while read h d x
 do 
 	git checkout $h
-	cp -r data/ /tmp/covidkids/$d
+	cp -r assets/data/ /tmp/covidkids/$d
 done	
 
 git checkout master
