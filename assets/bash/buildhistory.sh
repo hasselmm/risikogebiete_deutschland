@@ -3,15 +3,22 @@
 rm -fr /tmp/covidkids
 mkdir /tmp/covidkids
 
-git log  --pretty=%H\ %ai\ %an origin/master -- assets/data/  | grep UpdateBot |\
-while read h d x
-do 
-	git checkout $h
-	mkdir /tmp/covidkids/$d
-	cp -r assets/data/data_latest.* /tmp/covidkids/$d
-done	
-
+echo "Downloading..."
+git fetch origin
 git checkout master
 
-rm -fr assets/history
-mv /tmp/covidkids assets/history
+git log  --pretty=%H\ %ai\ %an origin/master -- assets/data/  | grep UpdateBot |\
+while read h d x
+do
+	echo "Checking $d..."
+
+	mkdir -p "assets/history/$d"
+	for f in "data_latest.csv" "data_latest.json"
+	do
+		test -f "assets/history/$d/$f" && continue
+		git rev-parse "$h:assets/data/$f" >/dev/null 2>&1 || continue
+
+		echo "Extracting $f..."
+		git show "$h:assets/data/$f" > "assets/history/$d/$f"
+	done
+done
