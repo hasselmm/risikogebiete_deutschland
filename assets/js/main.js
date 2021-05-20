@@ -9,9 +9,15 @@ var scripts = document.getElementsByTagName('script');
 var path = scripts[scripts.length-1].src.split('?')[0];      // remove any ?query
 var mydir = path.split('/').slice(0, -1).join('/')+'/';  // remove last filename part of path
 
+function strDate(date) {
+	return date.toISOString().substr(0, 10);
+}
+
 let myparams = new URLSearchParams(document.location.search.substring(1));
-let mydate = myparams.get("date");
-var mydata = mydir + (mydate ? "../history/" + mydate + "/" : "../data/");
+
+let mydateparam = myparams.get("date");
+let mydate = mydateparam ? new Date(mydateparam) : new Date();
+var mydata = mydir + "../history/" + strDate(mydate) + "/";
 
 function setup_amChartmap(){
 
@@ -379,17 +385,12 @@ const date = async () => {
   const lastcommitdate = lastcommit.committer.date
   document.getElementById("lastcommitdate").innerHTML = lastcommitdate
 
-  function strDate(date) {
-    return date.toISOString().substr(0, 10);
-  }
+  document.getElementById("history_now").innerHTML = strDate(mydate);
 
-  let d = mydate ? new Date(mydate) : new Date();
-  document.getElementById("history_now").innerHTML = strDate(d);
+  mydate.setDate(mydate.getDate() - 1);
+  document.getElementById("history_back").href = "?date=" + strDate(mydate);
 
-  d.setDate(d.getDate() - 1);
-  document.getElementById("history_back").href = "?date=" + strDate(d);
-
-  d.setDate(d.getDate() + 2);
-  document.getElementById("history_next").href = "?date=" + strDate(d);
+  mydate.setDate(mydate.getDate() + 2);
+  document.getElementById("history_next").href = "?date=" + strDate(mydate);
 }
 
