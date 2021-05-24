@@ -379,9 +379,9 @@ function project(geojson, projection) {
 
 
 const date = async () => {
-  const response1 = await fetch('https://api.github.com/repos/semohr/risikogebiete_deutschland/git/refs/heads/master');
+  const response1 = await fetch('https://api.github.com/repos/hasselmm/risikogebiete_deutschland/git/refs/heads/master');
   const refmain = await response1.json()
-  const response2 = await fetch('https://api.github.com/repos/semohr/risikogebiete_deutschland/git/commits/'+refmain.object.sha);
+  const response2 = await fetch('https://api.github.com/repos/hasselmm/risikogebiete_deutschland/git/commits/'+refmain.object.sha);
   const lastcommit = await response2.json()
   const lastcommitdate = lastcommit.committer.date
   document.getElementById("lastcommitdate").innerHTML = lastcommitdate
